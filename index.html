@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MP3 Player - Volume Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .file-input-wrapper {
+            margin-bottom: 25px;
+        }
+
+        input[type="file"] {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #764ba2;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .time-display {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #eee;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #667eea;
+            width: 0%;
+        }
+
+        .volume-section {
+            margin-bottom: 25px;
+        }
+
+        .volume-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .volume-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .volume-slider {
+            flex: 1;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #eee;
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #667eea;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .volume-slider::-webkit-slider-thumb:hover {
+            background: #764ba2;
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #667eea;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s;
+        }
+
+        .volume-slider::-moz-range-thumb:hover {
+            background: #764ba2;
+        }
+
+        .step-button {
+            padding: 8px 12px;
+            font-size: 12px;
+            min-width: 50px;
+        }
+
+        .db-display {
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #667eea;
+            min-width: 50px;
+        }
+
+        .info {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 MP3 Player</h1>
+        
+        <div class="file-input-wrapper">
+            <input type="file" id="fileInput" accept=".mp3" />
+        </div>
+
+        <div class="controls">
+            <button id="playBtn" onclick="togglePlay()" disabled>▶️ Play</button>
+            <button id="pauseBtn" onclick="togglePlay()" disabled>⏸️ Pause</button>
+        }</div>
+
+        <div class="time-display">
+            <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="volume-section">
+            <div class="volume-label">
+                <span>Volume Control</span>
+                <span id="dbValue">0.0 dB</span>
+            </div>
+            <div class="volume-controls">
+                <button class="step-button" onclick="adjustVolume(-0.5)">−</button>
+                <input type="range" id="volumeSlider" class="volume-slider" min="-120" max="0" step="0.5" value="0" />
+                <button class="step-button" onclick="adjustVolume(0.5)">+</button>
+            </div>
+        </div>
+
+        <div class="info">
+            <p><strong>Features:</strong></p>
+            <ul style="margin-left: 20px;">
+                <li>Upload any MP3 file</li>
+                <li>Volume control: -120dB to 0dB</li>
+                <li>0.5dB increments</li>
+                <li>Real-time dB display</li>
+            </ul>
+        </div>
+    </div>
+
+    <audio id="audio"></audio>
+
+    <script>
+        const audio = document.getElementById('audio');
+        const fileInput = document.getElementById('fileInput');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const dbValue = document.getElementById('dbValue');
+        const progressFill = document.getElementById('progressFill');
+        const currentTimeDisplay = document.getElementById('currentTime');
+        const durationDisplay = document.getElementById('duration');
+        const progressBar = document.querySelector('.progress-bar');
+
+        // File input handler
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                audio.src = url;
+                playBtn.disabled = false;
+                pauseBtn.disabled = false;
+            }
+        });
+
+        // Play/Pause toggle
+        function togglePlay() {
+            if (audio.paused) {
+                audio.play();
+                playBtn.textContent = '⏸️ Pause';
+                pauseBtn.textContent = '▶️ Play';
+            } else {
+                audio.pause();
+                playBtn.textContent = '▶️ Play';
+                pauseBtn.textContent = '⏸️ Pause';
+            }
+        }
+
+        // Volume control - convert dB to linear gain
+        function dbToLinear(db) {
+            return Math.pow(10, db / 20);
+        }
+
+        function updateVolume() {
+            const db = parseFloat(volumeSlider.value);
+            const linearGain = dbToLinear(db);
+            audio.volume = linearGain;
+            dbValue.textContent = db.toFixed(1) + ' dB';
+        }
+
+        // Adjust volume by steps
+        function adjustVolume(step) {
+            let currentDb = parseFloat(volumeSlider.value);
+            let newDb = currentDb + step;
+            
+            // Clamp between -120 and 0
+            newDb = Math.max(-120, Math.min(0, newDb));
+            
+            volumeSlider.value = newDb;
+            updateVolume();
+        }
+
+        // Volume slider event
+        volumeSlider.addEventListener('input', updateVolume);
+
+        // Progress bar update
+        audio.addEventListener('timeupdate', () => {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            progressFill.style.width = percent + '%';
+            currentTimeDisplay.textContent = formatTime(audio.currentTime);
+        });
+
+        // Duration update
+        audio.addEventListener('loadedmetadata', () => {
+            durationDisplay.textContent = formatTime(audio.duration);
+        });
+
+        // Progress bar click to seek
+        progressBar.addEventListener('click', (e) => {
+            const rect = progressBar.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            audio.currentTime = percent * audio.duration;
+        });
+
+        // Format time MM:SS
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Initialize volume
+        updateVolume();
+    </script>
+</body>
+</html>
